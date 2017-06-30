@@ -37,9 +37,23 @@ int main(int argc, char *argv[])
     for(unsigned int i=0; i < mol.natom; i++) { 
         for(unsigned int j=0; j < mol.natom; j++) {
             for(unsigned int k=0; k < mol.natom; k++) {
-                 for(unsigned int l=0; l < mol.natom; l++) {
-                    if(i!=j && i!=k && i!=l && j!=k && j!=l && k!=l && mol.bond(i,k) < 4.0 && mol.bond(k,j)<4.0 && mol.bond(k,l)<4.0){
+                 for(unsigned int l=0; l < j; l++) {
+                    if(i!=j && i!=k && i!=l && j!=k && k!=l && mol.bond(i,k) < 4.0 && mol.bond(k,j)<4.0 && mol.bond(k,l)<4.0){
                             printf("%d %d %d %d %5.5f\n", i,j,k,l, mol.oop(i,j,k,l)*(180/acos(-1.0)));
+                    }     
+                }
+            }
+        }
+    }
+
+    printf("Selected torsion angles:\n");
+
+    for(unsigned int i=0; i < mol.natom; i++) { 
+        for(unsigned int j=0; j < i; j++) {
+            for(unsigned int k=0; k < j; k++) {
+                 for(unsigned int l=0; l < k; l++) {
+                    if(mol.bond(i,k) < 4.0 && mol.bond(k,j)<4.0 && mol.bond(k,l)<4.0){
+                            printf("%d %d %d %d %5.5f\n", i,j,k,l, mol.torsion(i,j,k,l)*(180/acos(-1.0)));
                     }     
                 }
             }

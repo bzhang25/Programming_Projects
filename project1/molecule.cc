@@ -51,14 +51,25 @@ double Molecule::angle(int atom1, int atom2, int atom3)//function that returns a
     return acos(unit(0,atom2,atom1)*unit(0,atom2,atom3) + unit(1,atom2,atom1)*unit(1,atom2,atom3) + unit(2,atom2,atom1)*unit(2,atom2,atom3));
 }
 
+double * Molecule::crossproduct(int a, int b, int c)
+{
+
+    double *e = new double[3];
+
+    //cross product of two vectors
+    e[0] = unit(1,b,a)*unit(2,b,c) - unit(2,b,a)*unit(1,b,c);
+    e[1] = unit(2,b,a)*unit(0,b,c) - unit(0,b,a)*unit(2,b,c);
+    e[2] = unit(0,b,a)*unit(1,b,c) - unit(1,b,a)*unit(0,b,c);
+    
+    return e;
+
+}
+
 double Molecule::oop(int i, int j, int k, int l)//function that returns the oop angles between 4 atoms
 {
 
-    //cross product of two vectors
-    double ejkl_x = unit(1,k,j)*unit(2,k,l) - unit(2,k,j)*unit(1,k,l);
-    double ejkl_y = unit(2,k,j)*unit(0,k,l) - unit(0,k,j)*unit(2,k,l);
-    double ejkl_z = unit(0,k,j)*unit(1,k,l) - unit(1,k,j)*unit(0,k,l);
-    
+    double * e = crossproduct(j,k,l);
+    double ejkl_x=e[0], ejkl_y=e[1], ejkl_z = e[2]; 
     double theta = (ejkl_x*unit(0,k,i) + ejkl_y*unit(1,k,i) + ejkl_z*unit(2,k,i))/sin(angle(j,k,l));
 
     //if statements due to numerical percision needs for asin()
@@ -69,7 +80,37 @@ double Molecule::oop(int i, int j, int k, int l)//function that returns the oop 
     return theta;
 }
 
+double Molecule::torsion(int i, int j, int k, int l)//function that returns the oop angles between 4 atoms
+{
 
+    double * eijk = crossproduct(i,j,k);
+    double * ejkl = crossproduct(j,k,l);
+    double eijk_x=eijk[0], eijk_y=eijk[1], eijk_z = eijk[2]; 
+    double ejkl_x=ejkl[0], ejkl_y=ejkl[1], ejkl_z = ejkl[2]; 
+    
+    double tau = (ejkl_x*eijk_x + ejkl_y*eijk_y + ejkl_z*eijk_z)/(sin(angle(j,k,l))*sin(angle(i,j,k)));
+
+    //if statements due to numerical percision needs for asin()
+    if (tau > 1.0) tau = acos(1.0);
+    else if (tau < -1.0) tau = acos(-1.0);
+    else tau = acos(tau);
+
+    //compute the sign of the torsion angle
+    double cross_x = eijk_y*ejkl_z - eijk_z*ejkl_y;
+    double cross_y = eijk_z*ejkl_x - eijk_x*ejkl_z;
+    double cross_z = eijk_x*ejkl_y - eijk_y*ejkl_x;
+    double norm = cross_x*cross_x + cross_y*cross_y + cross_z*cross_z;
+    
+    cross_x /= norm;
+    cross_y /= norm;
+    cross_z /= norm;
+    
+    double sign = 1.0;
+    double dot = cross_x*unit(0,j,k)+cross_y*unit(1,j,k)+cross_z*unit(2,j,k);
+    if(dot < 0.0) sign = -1.0;
+    
+    return tau*sign;
+}
 Molecule::Molecule(const char *filename, int q) //constructor takes in constant variable point to filename mol charge as arguments
                                                 //since takes two arguments here also has to take in molecule.h
                                                 //we are also going to read in a file to extract geom information from file so don't have to manually do it

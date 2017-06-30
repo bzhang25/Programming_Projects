@@ -18,7 +18,8 @@ class Molecule  //defining a molecule class
         void translate(double x, double y, double z);
         double bond(int atom1, int atom2);
         double angle(int atom1, int atom2, int atom3);
-        double torsion(int atom1, int atom2, int atom3, int atom4);
+        double * crossproduct(int , int b, int c);
+        double torsion(int i, int j, int k, int l);
         double unit(int cart, int atom1, int atom2);
         double oop(int i, int j, int k, int l);
 

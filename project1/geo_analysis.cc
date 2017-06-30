@@ -53,9 +53,9 @@ int main(int argc, char *argv[])
     //form the unit vector matrices, only calculate half of matrices to avoid dividing by zero
     for(unsigned int i=0; i < mol.natom; i++) { 
         for(unsigned int j=0; j < i; j++) {
-            E_X[i][j] = -(mol.geom[i][0]-mol.geom[j][0])/R[i][j]; 
-            E_Y[i][j] = -(mol.geom[i][1]-mol.geom[j][1])/R[i][j]; 
-            E_Z[i][j] = -(mol.geom[i][2]-mol.geom[j][2])/R[i][j]; 
+            E_X[i][j] = E_X[j][i] =(-mol.geom[i][0]+mol.geom[j][0])/R[i][j]; 
+            E_Y[i][j] = E_Y[j][i] =(-mol.geom[i][1]+mol.geom[j][1])/R[i][j]; 
+            E_Z[i][j] = E_Z[j][i] =(-mol.geom[i][2]+mol.geom[j][2])/R[i][j]; 
         }
     }
 
@@ -63,11 +63,12 @@ int main(int argc, char *argv[])
     
     //Printing selected bond angles 
     printf("Selected bond angles:\n");
-    for(unsigned int i=0; i < mol.natom; i++) { 
-        for(unsigned int j=0; j < i; j++) {
-            for(unsigned int k=0; k < j; k++) {
-                if(R[j][i] < 4.0 && R[j][k]<4.0){
-                    double angle = acos(E_X[j][i]*E_X[j][k] + E_Y[j][i]*E_Y[j][k] + E_Z[j][i]*E_Z[j][k]) * 180.0 / PI;
+    for(unsigned int k=0; k < mol.natom; k++) { 
+        for(unsigned int j=0; j < k; j++) {
+            for(unsigned int i=0; i < j; i++) {
+                if(R[i][j] < 4.0 && R[j][k]<4.0){
+                    double angle = acos((E_X[j][i]*E_X[j][k] + E_Y[j][i]*E_Y[j][k] + E_Z[j][i]*E_Z[j][k])) * (180.0 / acos(-1.0));
+                    // for some reason gives 180 -right angle...figure out at some point
                     printf("%d %d %d %5.5f\n", i,j,k, angle);
                 
                 }

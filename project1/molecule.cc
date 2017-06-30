@@ -29,7 +29,7 @@ void Molecule::translate(double x, double y, double z) //takes the x,y,z double 
     }
 }
 
-double Molecule::bond(int atom1, int atom2)
+double Molecule::bond(int atom1, int atom2) //defines a function to calculate bond distances between atoms
 {
     
     double bond =  sqrt(pow((geom[atom1][0]-geom[atom2][0]),2.0) 
@@ -37,6 +37,36 @@ double Molecule::bond(int atom1, int atom2)
                        +pow((geom[atom1][2]-geom[atom2][2]),2.0));
 
     return bond;
+}
+
+double Molecule::unit(int cart, int atom1, int atom2) //function that computes components of unit vectors, where cart = 0 for x, 1 for y, and 2 for z
+{
+
+    return -(geom[atom1][cart]-geom[atom2][cart])/bond(atom1,atom2);
+}
+
+double Molecule::angle(int atom1, int atom2, int atom3)//function that returns angles between three atoms
+{
+
+    return acos(unit(0,atom2,atom1)*unit(0,atom2,atom3) + unit(1,atom2,atom1)*unit(1,atom2,atom3) + unit(2,atom2,atom1)*unit(2,atom2,atom3));
+}
+
+double Molecule::oop(int i, int j, int k, int l)//function that returns the oop angles between 4 atoms
+{
+
+    //cross product of two vectors
+    double ejkl_x = unit(1,k,j)*unit(2,k,l) - unit(2,k,j)*unit(1,k,l);
+    double ejkl_y = unit(2,k,j)*unit(0,k,l) - unit(0,k,j)*unit(2,k,l);
+    double ejkl_z = unit(0,k,j)*unit(1,k,l) - unit(1,k,j)*unit(0,k,l);
+    
+    double theta = (ejkl_x*unit(0,k,i) + ejkl_y*unit(1,k,i) + ejkl_z*unit(2,k,i))/sin(angle(j,k,l));
+
+    //if statements due to numerical percision needs for asin()
+    if (theta > 1.0) theta = asin(1.0);
+    else if (theta < -1.0) theta = asin (-1.0);
+    else theta = asin(theta);
+    
+    return theta;
 }
 
 

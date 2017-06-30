@@ -19,6 +19,8 @@ class Molecule  //defining a molecule class
         double bond(int atom1, int atom2);
         double angle(int atom1, int atom2, int atom3);
         double torsion(int atom1, int atom2, int atom3, int atom4);
+        double unit(int cart, int atom1, int atom2);
+        double oop(int i, int j, int k, int l);
 
         Molecule(const char *filename, int q); //constructor, automatically called, or instantiated, when object type Molecule declared
                                 //takes initial arguments, see molecule.cc for definition

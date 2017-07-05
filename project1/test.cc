@@ -1,4 +1,4 @@
-//reads in a geometry file and calculates bond lengths, angles, and oop angles
+//reads in a geometry file, computes information as defined in class Molecule, and prints out
 
 #include "molecule.h"
 #include <cmath>
@@ -11,6 +11,9 @@ int main(int argc, char *argv[])
 {
     Molecule mol("geom.dat",0); //declar a molecule object mol that gets parameters from geom.dat
     
+    printf("Input coordinates:\n");
+    mol.print_geom();
+
     printf("Bonds:\n");
     for(unsigned int i=0; i < mol.natom; i++) { 
         for(unsigned int j=0; j < i; j++) {
@@ -27,8 +30,7 @@ int main(int argc, char *argv[])
                 if(mol.bond(i,j) < 4.0 && mol.bond(j,k)<4.0){
                     printf("%d %d %d %5.5f\n", i,j,k, mol.angle(i,j,k)*(180/acos(-1.0)));
                 
-                }
-            }
+                } }
         }
     }
 
@@ -59,6 +61,14 @@ int main(int argc, char *argv[])
             }
         }
     }
+
+    double * cor = mol.com();
+    printf("Center of mass coordinates: %2.6f %2.6f %2.6f\n", cor[0], cor[1], cor[2]);
+    mol.translate(-cor[0],-cor[1],-cor[2]);
+
+    printf("Translated coordinates:\n");
+    mol.print_geom();
+
     return 0; //standard command of main functions to exit smoothly
 }
 

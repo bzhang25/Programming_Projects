@@ -1,6 +1,7 @@
 //this is the file that actually defines the functions in the Molecule class 
 
 #include "molecule.h" //includes the initial declaration of the class 
+#include "masses.h"
 #include <cstdio>
 
 //these are need for reading in a file
@@ -111,6 +112,36 @@ double Molecule::torsion(int i, int j, int k, int l)//function that returns the 
     
     return tau*sign;
 }
+
+double * Molecule::com()
+{
+
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
+    double m = 0.0;
+    
+    
+    for(int i=0; i < natom; i++){
+        m += mass[(int) zvals[i]];
+        x += mass[(int) zvals[i]]*geom[i][0];
+        y += mass[(int) zvals[i]]*geom[i][1];
+        z += mass[(int) zvals[i]]*geom[i][2];
+    } 
+
+    double X = x/m;
+    double Y = y/m;
+    double Z = z/m;
+    
+    double *cor = new double[3];
+
+    cor[0] = X; 
+    cor[1] = Y; 
+    cor[2] = Z; 
+    
+    return cor;
+}
+
 Molecule::Molecule(const char *filename, int q) //constructor takes in constant variable point to filename mol charge as arguments
                                                 //since takes two arguments here also has to take in molecule.h
                                                 //we are also going to read in a file to extract geom information from file so don't have to manually do it

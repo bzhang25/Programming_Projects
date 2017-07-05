@@ -69,6 +69,12 @@ int main(int argc, char *argv[])
     printf("Translated coordinates:\n");
     mol.print_geom();
 
+    mol.moi();
+
+
+
+
+
     return 0; //standard command of main functions to exit smoothly
 }
 

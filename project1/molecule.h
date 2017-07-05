@@ -23,6 +23,7 @@ class Molecule  //defining a molecule class
         double unit(int cart, int atom1, int atom2);
         double oop(int i, int j, int k, int l);
         double * com();
+        void moi();
 
         Molecule(const char *filename, int q); //constructor, automatically called, or instantiated, when object type Molecule declared
                                 //takes initial arguments, see molecule.cc for definition

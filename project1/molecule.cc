@@ -13,6 +13,18 @@
 //for math functions
 #include <cmath>
 
+//Uses Eigen package (canned library) that is used to manipulate matrix types
+#include "Eigen/Dense" 
+#include "Eigen/Eigenvalues"
+#include "Eigen/Core"
+
+#define bohrtoang 0.52917721067
+#define bohrtocm  5.2917721067e-9
+#define amutogram 1.660539040e-24
+
+//defines new type called matrix that's dynamically allocated and contains only doubles 
+typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix; 
+
 void Molecule::print_geom() //use prefix Molecule to explicitly define print_geom function for the Molecule class 
 {
     for(int i=0; i < natom; i++)
@@ -141,6 +153,55 @@ double * Molecule::com()
     
     return cor;
 }
+
+void Molecule::moi()
+{
+
+    Matrix I(3,3);
+
+    for(int k=0; k < natom; k++)
+    {
+        I(0,0) += mass[(int) zvals[k]]*(geom[k][1]*geom[k][1]+geom[k][2]*geom[k][2]);
+        I(1,1) += mass[(int) zvals[k]]*(geom[k][0]*geom[k][0]+geom[k][2]*geom[k][2]);
+        I(2,2) += mass[(int) zvals[k]]*(geom[k][1]*geom[k][1]+geom[k][0]*geom[k][0]);
+
+        I(0,1) += mass[(int) zvals[k]]*geom[k][0]*geom[k][1];  
+        I(0,2) += mass[(int) zvals[k]]*geom[k][0]*geom[k][2];  
+        I(1,2) += mass[(int) zvals[k]]*geom[k][2]*geom[k][1];  
+    
+    }
+    
+    I(1,0) = I(0,1);
+    I(2,0) = I(0,2);
+    I(2,1) = I(1,2);
+
+    printf("Moment of Inertia Tensor in amu bohr^2):\n");
+
+    cout << I << endl;
+
+    //compute eigenvalues and eigenvectors of moment of inertia tensor
+    Eigen::SelfAdjointEigenSolver<Matrix> solver(I);
+    Matrix evecs = solver.eigenvectors();
+    Matrix evals = solver.eigenvalues(); //automatically puts in a sorted array smallest first
+
+    printf("Moments of inertia(amu bohr^2):\n");
+    cout << evals << endl;
+
+    printf("Moments of inertia(amu AA^2):\n");
+    cout << evals*bohrtoang*bohrtoang <<endl;
+
+    printf("Moments of inertia(g cm^2):\n");
+    cout << evals*bohrtocm*bohrtocm*amutogram << endl;
+    
+    if (natom==0) printf("Molecule is diatomic\n");
+    else if (evals(0) < 1.0e-4) printf("Molecule is linear\n");
+    else if ((evals(1) - evals(0)) < 1.0e-4 && (evals(2) - evals(0)) < 1.0e-4) printf("Molecule is a spherical top\n");
+    else if ((evals(1) - evals(0)) < 1.0e-4 && (evals(2)-evals(0)) > 1.0e-4) printf("Molecule is an oblate top\n");
+    else if ((evals(2) - evals(1)) < 1.0e-4 && (evals(2)-evals(0)) > 1.0e-4) printf("Molecule is a prolate top\n");
+    else printf("Molecule is an asymmetric top\n");
+
+}
+
 
 Molecule::Molecule(const char *filename, int q) //constructor takes in constant variable point to filename mol charge as arguments
                                                 //since takes two arguments here also has to take in molecule.h

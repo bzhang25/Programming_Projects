@@ -21,6 +21,9 @@
 #define bohrtoang 0.52917721067
 #define bohrtocm  5.2917721067e-9
 #define amutogram 1.660539040e-24
+#define _h 6.62607004e-27 //(cm^2 g s^-1)
+#define _c 2.99792458e10 //(cm/s)
+#define _pi acos(-1.0) 
 
 //defines new type called matrix that's dynamically allocated and contains only doubles 
 typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix; 
@@ -200,6 +203,21 @@ void Molecule::moi()
     else if ((evals(2) - evals(1)) < 1.0e-4 && (evals(2)-evals(0)) > 1.0e-4) printf("Molecule is a prolate top\n");
     else printf("Molecule is an asymmetric top\n");
 
+    Matrix evals_gcm = evals*bohrtocm*bohrtocm*amutogram;
+
+    double A = _h/(8*_pi*_pi*_c*evals_gcm(0));
+    double B = _h/(8*_pi*_pi*_c*evals_gcm(1));
+    double C = _h/(8*_pi*_pi*_c*evals_gcm(2));
+    
+    printf("Rotational constants in cm^-1\n");
+    printf("A: %5.5f \n", A); 
+    printf("B: %5.5f \n", B); 
+    printf("C: %5.5f \n", C); 
+
+    printf("Rotational constants in MHz\n");
+    printf("A: %5.5f \n", A*_c*1.0e-6); 
+    printf("B: %5.5f \n", B*_c*1.0e-6); 
+    printf("C: %5.5f \n", C*_c*1.0e-6); 
 }
 
 

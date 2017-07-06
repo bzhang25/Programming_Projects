@@ -1,7 +1,7 @@
 
 using namespace std; //using standard namespace 
 
-double mass[] = {
+static const double mass[] = {
 0.000000,
 1.007825,
 4.002603,

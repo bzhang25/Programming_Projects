@@ -15,7 +15,10 @@ int main(int argc, char *argv[])
     hessian = fopen ("hessian.dat", "r"); //returns a pointer to FILE object called hessian
 
     Molecule mol("geom.dat",0); //declar a molecule object mol that gets parameters from geom.dat
+   // printf("%d %d %d \n", mol.zvals[0], mol.zvals[1], mol.zvals[2]);
 
+    printf("input geom:\n");
+    mol.print_geom();
     fscanf(hessian, "%d", &natom); //fscanf reads in a regex from pointer to FILE hessian and saves it to the address of natom
 
     //test to see if the number of atoms in the geom.dat and hessian.dat file is consistent
@@ -38,14 +41,16 @@ int main(int argc, char *argv[])
         }
     }
 
-    //first two loops loop over the number of atoms
+    //i,j loop over the number of atoms, k, l loop over number of coordinates for each atom
     for(unsigned int i=0; i < natom; i++) { 
         for(unsigned int j=0; j < natom; j++) {
-           //second two loops loop over x,y,z coordinates of each atom 
-            for(unsigned int k=3*i; k < 3*i+3; k++) { 
-                for(unsigned int l=3*j; l < 3*l+3; l++) {
-                    
-                    H_M[k][l] = H[k][l]/(mass[(int) mol.zvals[i]]*mass[(int) mol.zvals[j]]);
+            for(unsigned int k=3*i; k < (3*i+3); k++) { 
+                for(unsigned int l=3*j; l < (3*j+3); l++) {
+                    //printf("value: %lf mass i: %lf mass j: %lf i: %d j: %d \n", H[k][l], mass[(int) mol.zvals[i]],  mass[(int) mol.zvals[j]],i,j);
+  //                  printf("value: %lf zvals i: %d zvals j: %d i: %d j: %d \n", H[k][l], int (mol.zvals[i]),  int (mol.zvals[j]),i,j);
+                        
+            
+                    H_M[k][l] = H[k][l]/sqrt(mass[(int) mol.zvals[i]]*mass[(int) mol.zvals[j]]);
                 }
             }
         }

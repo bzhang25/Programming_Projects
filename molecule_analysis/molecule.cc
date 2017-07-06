@@ -1,7 +1,7 @@
 //this is the file that actually defines the functions in the Molecule class 
 
 #include "molecule.h" //includes the initial declaration of the class 
-#include "masses.h"
+#include "../extra_files/masses.h"
 #include <cstdio>
 
 //these are need for reading in a file
@@ -14,9 +14,9 @@
 #include <cmath>
 
 //Uses Eigen package (canned library) that is used to manipulate matrix types
-#include "Eigen/Dense" 
-#include "Eigen/Eigenvalues"
-#include "Eigen/Core"
+#include "../extra_files/Eigen/Dense" 
+#include "../extra_files/Eigen/Eigenvalues"
+#include "../extra_files/Eigen/Core"
 
 #define bohrtoang 0.52917721067
 #define bohrtocm  5.2917721067e-9

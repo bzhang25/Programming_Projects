@@ -221,7 +221,7 @@ void Molecule::moi()
 }
 
 
-Molecule::Molecule(const char *filename, int q) //constructor takes in constant variable point to filename mol charge as arguments
+Molecule::Molecule(const char *filename, int q) //constructor takes in constant variable point to filename and charge as arguments
                                                 //since takes two arguments here also has to take in molecule.h
                                                 //we are also going to read in a file to extract geom information from file so don't have to manually do it
                                                 //this allows to initialize our variable values 

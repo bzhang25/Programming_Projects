@@ -31,7 +31,7 @@ typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> M
 void Molecule::print_geom() //use prefix Molecule to explicitly define print_geom function for the Molecule class 
 {
     for(int i=0; i < natom; i++)
-        printf("%d %8.5f %8.5f %8.5f\n", zvals[i], geom[i][0], geom[i][1],geom[i][2]);
+        printf("%lf %8.5f %8.5f %8.5f\n", zvals[i], geom[i][0], geom[i][1],geom[i][2]);
         //iterate over number of atoms, print the zval, x, y, z coordinates 
 }
 
@@ -236,7 +236,7 @@ Molecule::Molecule(const char *filename, int q) //constructor takes in constant 
     is >> natom; //reads the number of atoms from filename
 
     //allocating space
-    zvals = new int[natom];
+    zvals = new double[natom];
     geom = new double* [natom];
     for(int i=0; i < natom; i++)
         geom[i] = new double[3];

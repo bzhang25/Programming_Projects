@@ -9,7 +9,7 @@ class Molecule  //defining a molecule class
     public:     //directive indicates that all variables are functions are available to any code with object Molecule
         int natom; //define an integer variable natom
         int charge; //define an integer variable charge
-        int *zvals; //define a point-to-integer variable zvals, which defines an address not the actual variable 
+        double *zvals; //define a point-to-integer variable zvals, which defines an address not the actual variable 
         double **geom; //pointer to a pointer of a double precision float 
 
         /* The following are declarations but not yet definitions  of member functions*/

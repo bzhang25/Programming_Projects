@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
 {
     Molecule mol("geom.dat",0); //declar a molecule object mol that gets parameters from geom.dat
     
+    //calls print_geom to print geometry
     printf("Input coordinates:\n");
     mol.print_geom();
 
@@ -23,6 +24,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    //prints bonds that are meaningful
     printf("Selected bond angles:\n");
     for(unsigned int i=0; i < mol.natom; i++) { 
         for(unsigned int j=0; j < i; j++) {
@@ -34,6 +36,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    //prints all oop angles that are meaningful
     printf("Selected oop angles:\n");
 
     for(unsigned int i=0; i < mol.natom; i++) { 
@@ -48,6 +51,7 @@ int main(int argc, char *argv[])
         }
     }
 
+    //prints all meaningful torsion angles (with sign)
     printf("Selected torsion angles:\n");
 
     for(unsigned int i=0; i < mol.natom; i++) { 
@@ -62,17 +66,18 @@ int main(int argc, char *argv[])
         }
     }
 
+    //calling center of mass function to return center of mass coordinates
     double * cor = mol.com();
     printf("Center of mass coordinates: %2.6f %2.6f %2.6f\n", cor[0], cor[1], cor[2]);
+
+    //translate molecule by center of mass to place at origin 
     mol.translate(-cor[0],-cor[1],-cor[2]);
 
     printf("Translated coordinates:\n");
     mol.print_geom();
 
+    //calls moment of inertia tensor function as defined in molecule.cc
     mol.moi();
-
-
-
 
 
     return 0; //standard command of main functions to exit smoothly

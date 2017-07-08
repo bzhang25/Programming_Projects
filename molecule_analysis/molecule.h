@@ -13,6 +13,7 @@ class Molecule  //defining a molecule class
         double **geom; //pointer to a pointer of a double precision float 
 
         /* The following are declarations but not yet definitions  of member functions*/
+        // see molecule.cc for definitions and explanations on what they do
         void print_geom(); //void is for functions that might not have a predefined return type or doesn't return anything
         void rotate(double phi);
         void translate(double x, double y, double z);

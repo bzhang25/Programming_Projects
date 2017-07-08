@@ -1,4 +1,5 @@
 //this is the file that actually defines the functions in the Molecule class 
+//molecule.h has the initial declaration of these functions
 
 #include "molecule.h" //includes the initial declaration of the class 
 #include "../extra_files/masses.h"
@@ -18,6 +19,7 @@
 #include "../extra_files/Eigen/Eigenvalues"
 #include "../extra_files/Eigen/Core"
 
+//define variable names that are used later- these are constants 
 #define bohrtoang 0.52917721067
 #define bohrtocm  5.2917721067e-9
 #define amutogram 1.660539040e-24
@@ -28,6 +30,9 @@
 //defines new type called matrix that's dynamically allocated and contains only doubles 
 typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Matrix; 
 
+//these functions refer to variables defined in molecule.h
+
+//prints the input zvals and geometry
 void Molecule::print_geom() //use prefix Molecule to explicitly define print_geom function for the Molecule class 
 {
     for(int i=0; i < natom; i++)
@@ -35,6 +40,8 @@ void Molecule::print_geom() //use prefix Molecule to explicitly define print_geo
         //iterate over number of atoms, print the zval, x, y, z coordinates 
 }
 
+//translates every coordinate by indicated by input parameter
+//notice the void type since it doesn't return anything
 void Molecule::translate(double x, double y, double z) //takes the x,y,z double precision floats as input
 {
     for(int i=0; i < natom; i++) {
@@ -45,9 +52,10 @@ void Molecule::translate(double x, double y, double z) //takes the x,y,z double 
     }
 }
 
-double Molecule::bond(int atom1, int atom2) //defines a function to calculate bond distances between atoms
+double Molecule::bond(int atom1, int atom2) //defines a function to calculate bond distances between atoms and returns the value
 {
-    
+   //sqrt() uses cmath 
+
     double bond =  sqrt(pow((geom[atom1][0]-geom[atom2][0]),2.0) 
                        +pow((geom[atom1][1]-geom[atom2][1]),2.0) 
                        +pow((geom[atom1][2]-geom[atom2][2]),2.0));
@@ -67,6 +75,8 @@ double Molecule::angle(int atom1, int atom2, int atom3)//function that returns a
     return acos(unit(0,atom2,atom1)*unit(0,atom2,atom3) + unit(1,atom2,atom1)*unit(1,atom2,atom3) + unit(2,atom2,atom1)*unit(2,atom2,atom3));
 }
 
+//function that calculates the cross product of two vectors. I defined this to return a pointer (double *) which points to the location where 
+//the three values of the crossproduct is stored so that I can call this function later on
 double * Molecule::crossproduct(int a, int b, int c)
 {
 
@@ -84,7 +94,7 @@ double * Molecule::crossproduct(int a, int b, int c)
 double Molecule::oop(int i, int j, int k, int l)//function that returns the oop angles between 4 atoms
 {
 
-    double * e = crossproduct(j,k,l);
+    double * e = crossproduct(j,k,l); //using crossproduct function
     double ejkl_x=e[0], ejkl_y=e[1], ejkl_z = e[2]; 
     double theta = (ejkl_x*unit(0,k,i) + ejkl_y*unit(1,k,i) + ejkl_z*unit(2,k,i))/sin(angle(j,k,l));
 
@@ -99,7 +109,7 @@ double Molecule::oop(int i, int j, int k, int l)//function that returns the oop 
 double Molecule::torsion(int i, int j, int k, int l)//function that returns the oop angles between 4 atoms
 {
 
-    double * eijk = crossproduct(i,j,k);
+    double * eijk = crossproduct(i,j,k); //since crossproduct function returns a pointer have to define eijk to be a pointer
     double * ejkl = crossproduct(j,k,l);
     double eijk_x=eijk[0], eijk_y=eijk[1], eijk_z = eijk[2]; 
     double ejkl_x=ejkl[0], ejkl_y=ejkl[1], ejkl_z = ejkl[2]; 
@@ -121,6 +131,7 @@ double Molecule::torsion(int i, int j, int k, int l)//function that returns the 
     cross_y /= norm;
     cross_z /= norm;
     
+    //this part returns the sign of the torsion angle
     double sign = 1.0;
     double dot = cross_x*unit(0,j,k)+cross_y*unit(1,j,k)+cross_z*unit(2,j,k);
     if(dot < 0.0) sign = -1.0;
@@ -128,6 +139,7 @@ double Molecule::torsion(int i, int j, int k, int l)//function that returns the 
     return tau*sign;
 }
 
+//this calculates the center of mass and returns a pointer which points to the address of where the COM x,y, and z coordinates are
 double * Molecule::com()
 {
 
@@ -157,6 +169,8 @@ double * Molecule::com()
     return cor;
 }
 
+// this function calculates the moment of inertia tensor but doesn't return anything
+//it uses a matrix object as defined up top - utilizes Eigen canned library
 void Molecule::moi()
 {
 
@@ -196,6 +210,7 @@ void Molecule::moi()
     printf("Moments of inertia(g cm^2):\n");
     cout << evals*bohrtocm*bohrtocm*amutogram << endl;
     
+    //determining the type of top based on Ia Ib Ic values
     if (natom==0) printf("Molecule is diatomic\n");
     else if (evals(0) < 1.0e-4) printf("Molecule is linear\n");
     else if ((evals(1) - evals(0)) < 1.0e-4 && (evals(2) - evals(0)) < 1.0e-4) printf("Molecule is a spherical top\n");
@@ -205,10 +220,12 @@ void Molecule::moi()
 
     Matrix evals_gcm = evals*bohrtocm*bohrtocm*amutogram;
 
+    //these are rotational constants calculated from the eigenvalues of the moment of inertia tensor
     double A = _h/(8*_pi*_pi*_c*evals_gcm(0));
     double B = _h/(8*_pi*_pi*_c*evals_gcm(1));
     double C = _h/(8*_pi*_pi*_c*evals_gcm(2));
     
+    //printing 
     printf("Rotational constants in cm^-1\n");
     printf("A: %5.5f \n", A); 
     printf("B: %5.5f \n", B); 

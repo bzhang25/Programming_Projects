@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
     double **H = new double*[3*natom]; //the size is 3N for the x,y,z coordinates of each atom
     Matrix H_M(3*natom,3*natom); //define mass-weighted hessian matrix object
 
+    //define second dimension of hessian matrix
     for(int i=0; i < 3*natom; i++){ 
         H[i] = new double[3*natom];
     }
@@ -60,19 +61,19 @@ int main(int argc, char *argv[])
         for(unsigned int j=0; j < natom; j++) {
             for(unsigned int k=3*i; k < (3*i+3); k++) { 
                 for(unsigned int l=3*j; l < (3*j+3); l++) {
-                    //printf("value: %lf mass i: %lf mass j: %lf i: %d j: %d \n", H[k][l], mass[(int) mol.zvals[i]],  mass[(int) mol.zvals[j]],i,j);
-  //                  printf("value: %lf zvals i: %d zvals j: %d i: %d j: %d \n", H[k][l], int (mol.zvals[i]),  int (mol.zvals[j]),i,j);
-                        
             
+                    //elements of the mass weighted hessian
                     H_M(k,l) = H[k][l]/sqrt(mass[(int) mol.zvals[i]]*mass[(int) mol.zvals[j]]);
                 }
             }
         }
     }
 
+    //print mass weignhted hessian matrix
     cout << "Weighted Hessian Matrix: \n";
     cout << H_M << endl;
 
+    //diagonalizes the mass weghted hessian matrix. force constants are the eigenvalues
     Eigen::SelfAdjointEigenSolver<Matrix> solver(H_M);
     Matrix evecs = solver.eigenvectors();
     Matrix evals = solver.eigenvalues(); //automatically puts in a sorted array smallest first
@@ -80,11 +81,12 @@ int main(int argc, char *argv[])
     cout << "Eigenvalues (hartree/amu-bohr^2):\n";
     cout << evals << endl;
 
+    // converts eigenvalues(force constants) to frequencies where the frequency is proportional to the squart root of the force constant 
     cout << "Frequencies(cm^-1):\n";
-    //cout << pow(evals, 0.5)*8065.54446 << endl;
     for (int i=0; i<3*natom; i++) {
         cout << sqrt(evals(i)*_hartoJ*_amutokg*_bohrtom*_bohrtom)*(1/(2*_pi))*(1/_c) << endl;
     }
+
     //frees allocated block of memory for H and H_M
     for (int i=0; i<3*natom; i++) {
         delete[] H[i];
